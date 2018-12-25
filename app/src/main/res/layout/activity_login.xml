@@ -31,6 +31,7 @@
             android:text="Connect"
             android:id="@+id/connectButton"
             android:onClick="onConnectButtonClicked"
+            android:enabled="false"
 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -45,13 +46,29 @@
             android:layout_width="wrap_content"
             android:hint="Server address"
             android:layout_height="wrap_content"
-            android:inputType="textPersonName"
             android:text="127.0.0.1"
             android:textColor="#888888"
             android:textAlignment="center"
             android:textSize="12dp"
             android:ems="10"
-            android:id="@+id/serverAddressTextField" android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"/>
+            android:id="@+id/serverAddressTextField"
+            android:layout_marginBottom="8dp" app:layout_constraintBottom_toTopOf="@+id/serverPortTextField"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"/>
+
+    <EditText
+            android:layout_width="wrap_content"
+            android:hint="Server port"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:text=""
+            android:textColor="#888888"
+            android:textAlignment="center"
+            android:textSize="12dp"
+            android:ems="10"
+            android:id="@+id/serverPortTextField" android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="8dp" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="8dp"/>
+
 </android.support.constraint.ConstraintLayout>
