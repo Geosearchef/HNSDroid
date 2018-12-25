@@ -6,7 +6,6 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
-
     <application
             android:allowBackup="true"
             android:icon="@mipmap/ic_launcher"
@@ -14,12 +13,23 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
-        <activity android:name=".LoginActivity" android:screenOrientation="portrait">
+        <activity
+                android:name=".LoginActivity"
+                android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity
+                android:name=".GameSetupActivity"
+                android:label="@string/title_activity_game_setup"
+                android:parentActivityName=".LoginActivity"
+                android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value="de.geosearchef.hnsdroid.LoginActivity"/>
         </activity>
     </application>
 

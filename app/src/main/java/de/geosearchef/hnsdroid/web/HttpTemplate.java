@@ -11,6 +11,7 @@ import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import de.geosearchef.hnsdroid.toolbox.Callback;
 import de.geosearchef.hnsdroid.toolbox.Logger;
+import lombok.Getter;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -20,6 +21,7 @@ import java.util.Map;
 public class HttpTemplate {
 
 	private final Bundle bundle = new Bundle();
+	@Getter
 	private final Gson gson = new Gson();
 
 	private final RequestQueue queue;
@@ -29,22 +31,24 @@ public class HttpTemplate {
 	}
 
 	//Method: Request.Method
-	public void sendAsyncRequest(String route, int method, Object object, final Callback<String> callback) {
-		String url = buildURL(route);
-		JSONObject json;
-		try {
-			json = new JSONObject(gson.toJson(object));
-		} catch (JSONException e) {
-			Logger.error("Error while serializing", e);
-			callback.onFailure(e);
-			return;
+	public <T> void sendAsyncRequest(String route, int method, Object object, final Class reponseClass, Map<String, String> params, final Callback<T> callback) {
+		String url = buildURL(route, params);
+		JSONObject json = new JSONObject();
+		if(object != null) {
+			try {
+				json = new JSONObject(gson.toJson(object));
+			} catch (JSONException e) {
+				Logger.error("Error while serializing", e);
+				callback.onFailure(e);
+				return;
+			}
 		}
 
 		JsonObjectRequest request = new JsonObjectRequest(method, url, json,
 				new Response.Listener<JSONObject>() {
 					@Override
 					public void onResponse(JSONObject response) {
-						callback.onSuccess(response.toString());
+						callback.onSuccess((T) gson.fromJson(response.toString(), reponseClass));
 					}
 				},
 				new Response.ErrorListener() {
@@ -66,11 +70,11 @@ public class HttpTemplate {
 		queue.add(request);
 	}
 
-	public String sendSyncRequest(String route, int method, Object object) {
-		final String[] result = new String[2];
-		sendAsyncRequest(route, method, object, new Callback<String>() {
+	public <T> T sendSyncRequest(String route, int method, Object object, Class responseClass, Map<String, String> params) {
+		final Object[] result = new Object[2];
+		sendAsyncRequest(route, method, object, responseClass, params, new Callback<T>() {
 			@Override
-			public void onSuccess(String o) {
+			public void onSuccess(T o) {
 				synchronized (result) {
 					result[0] = o;
 					result.notifyAll();
@@ -96,22 +100,48 @@ public class HttpTemplate {
 		}
 
 		if(result[0] != null) {
-			return result[0];
+			return (T) result[0];
 		} else {
-			throw new HttpException(result[1]);
+			throw new HttpException((String) result[1]);
 		}
 	}
 
-	public String buildURL(String route) {
+	public String buildURL(String route, Map<String, String> params) {
 		if(! route.startsWith("/")) {
 			route = "/" + route;
 		}
-		return String.format("http://%s:%d%s", WebService.getConnectedServerAddress(), WebService.getConnectedServerPort(), route);
+		StringBuilder paramsString = new StringBuilder();
+		if(! params.isEmpty()) {
+			paramsString.append("?");
+		}
+
+		for(Map.Entry<String, String> param : params.entrySet()) {
+			paramsString.append(param.getKey());
+			paramsString.append("=");
+			paramsString.append(param.getValue());
+			paramsString.append("&");
+		}
+
+		paramsString.deleteCharAt(paramsString.length() - 1);
+
+		return String.format("http://%s:%d%s%s", WebService.getConnectedServerAddress(), WebService.getConnectedServerPort(), route, paramsString.toString());
 	}
 
 	public class HttpException extends RuntimeException {
 		public HttpException(String message) {
 			super(message);
 		}
+	}
+
+	public Map<String, String> params(String... s) {
+		if(s.length % 2 == 1) {
+			throw new RuntimeException("Could not parse params");
+		}
+		Map<String, String> res = new HashMap<>();
+		for(int i = 0;i < s.length / 2;i++) {
+			//TODO: sanatize
+			res.put(s[i*2], s[i*2+1].replace("&", "").replace(" ", "%20").replace("=", ""));
+		}
+		return res;
 	}
 }
