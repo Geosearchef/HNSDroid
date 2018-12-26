@@ -2,7 +2,7 @@ package de.geosearchef.hnsdroid.toolbox;
 
 import android.app.Activity;
 
-public abstract class FxCallback<T> extends Callback<T> {
+public abstract class FXCallback<T> extends Callback<T> {
 	public abstract void onSuccessFX(T t);
 
 	public void onFailureFX(Exception e) {
@@ -28,7 +28,7 @@ public abstract class FxCallback<T> extends Callback<T> {
 	}
 
 	private final Activity activity;
-	public FxCallback(Activity activity) {
+	public FXCallback(Activity activity) {
 		this.activity = activity;
 	}
 }

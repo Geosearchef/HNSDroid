@@ -3,6 +3,9 @@ package de.geosearchef.hnsdroid.web;
 import com.android.volley.Request;
 import de.geosearchef.hnsdroid.GameService;
 import de.geosearchef.hnsdroid.HNSService;
+import de.geosearchef.hnsdroid.data.GameOptions;
+import de.geosearchef.hnsdroid.data.PlayerType;
+import de.geosearchef.hnsdroid.responses.JoinResponse;
 import de.geosearchef.hnsdroid.responses.RegisterResponse;
 import de.geosearchef.hnsdroid.toolbox.Callback;
 import lombok.Getter;
@@ -70,7 +73,59 @@ public class WebService {
 				prefEditor.putString(PREVIOUS_USERNAME_KEY, username);
 				prefEditor.apply();
 
-				callback.onSuccess(null);
+				callback.onSuccess();
+			}
+		});
+	}
+
+	public static void joinGame(final int gameKey, final PlayerType playerType, final Callback callback) {
+		runAsync(new Runnable() {
+			@Override
+			public void run() {
+				JoinResponse response;
+				try {
+					response = template.<JoinResponse>sendSyncRequest(
+							"/joinGame",
+							Request.Method.POST,
+							null,
+							JoinResponse.class,
+							template.paramsAuthorized(
+									"key", String.valueOf(gameKey),
+									"playerType", playerType.getKey()
+							));
+				} catch(HttpTemplate.HttpException e) {
+					callback.onFailure(e);
+					return;
+				}
+
+				GameService.onJoinGame(response.getTitle(), response.getKey(), response.getGameConfig());
+				callback.onSuccess();
+			}
+		});
+	}
+
+	public static void createGame(final String gameTitle, final PlayerType playerType, final GameOptions gameOptions, final Callback callback) {
+		runAsync(new Runnable() {
+			@Override
+			public void run() {
+				JoinResponse response;
+				try {
+					response = template.<JoinResponse>sendSyncRequest(
+							"/createGame",
+							Request.Method.POST,
+							gameOptions,
+							JoinResponse.class,
+							template.paramsAuthorized(
+									"title", gameTitle,
+									"playerType", playerType.getKey()
+							));
+				} catch(HttpTemplate.HttpException e) {
+					callback.onFailure(e);
+					return;
+				}
+
+				GameService.onJoinGame(response.getTitle(), response.getKey(), response.getGameConfig());
+				callback.onSuccess();
 			}
 		});
 	}

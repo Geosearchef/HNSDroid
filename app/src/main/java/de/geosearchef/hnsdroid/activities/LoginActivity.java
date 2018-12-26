@@ -1,4 +1,4 @@
-package de.geosearchef.hnsdroid;
+package de.geosearchef.hnsdroid.activities;
 
 import android.Manifest;
 import android.app.ProgressDialog;
@@ -12,7 +12,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-import de.geosearchef.hnsdroid.toolbox.FxCallback;
+import de.geosearchef.hnsdroid.HNSService;
+import de.geosearchef.hnsdroid.R;
+import de.geosearchef.hnsdroid.toolbox.FXCallback;
+import de.geosearchef.hnsdroid.toolbox.Toolbox;
 import de.geosearchef.hnsdroid.web.WebService;
 
 import java.util.LinkedList;
@@ -51,10 +54,7 @@ public class LoginActivity extends AppCompatActivity {
 
 		connectButton = findViewById(R.id.connectButton);
 
-		progressDialog = new ProgressDialog(this);
-		progressDialog.setMessage("Connecting...");
-		progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-		progressDialog.setIndeterminate(true);
+		progressDialog = Toolbox.generateProgressDialog(this, "Connecting...");
 
 		WebService.init();
 
@@ -69,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
 				serverAddressTextField.getText().toString(),
 				Integer.parseInt(serverPortTextField.getText().toString()),
 				usernameTextField.getText().toString(),
-				new FxCallback<Object>(this) {
+				new FXCallback<Object>(this) {
 					@Override
 					public void onSuccessFX(Object o) {
 						Intent intent = new Intent(LoginActivity.this, GameSetupActivity.class);
@@ -80,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
 					@Override
 					public void onFailureFX(Exception e) {
 						progressDialog.hide();
-						Toast.makeText(LoginActivity.this, "Could not connect to server", Toast.LENGTH_SHORT).show();
+//						Toast.makeText(LoginActivity.this, "Could not connect to server", Toast.LENGTH_SHORT).show();
 						Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
 					}
 				});

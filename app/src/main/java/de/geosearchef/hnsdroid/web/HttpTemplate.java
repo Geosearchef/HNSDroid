@@ -9,14 +9,15 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
+import de.geosearchef.hnsdroid.GameService;
+import de.geosearchef.hnsdroid.HNSService;
 import de.geosearchef.hnsdroid.toolbox.Callback;
 import de.geosearchef.hnsdroid.toolbox.Logger;
 import lombok.Getter;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class HttpTemplate {
 
@@ -127,6 +128,8 @@ public class HttpTemplate {
 		return String.format("http://%s:%d%s%s", WebService.getConnectedServerAddress(), WebService.getConnectedServerPort(), route, paramsString.toString());
 	}
 
+
+
 	public class HttpException extends RuntimeException {
 		public HttpException(String message) {
 			super(message);
@@ -143,5 +146,14 @@ public class HttpTemplate {
 			res.put(s[i*2], s[i*2+1].replace("&", "").replace(" ", "%20").replace("=", ""));
 		}
 		return res;
+	}
+
+	public Map<String,String> paramsAuthorized(String... s) {
+		List<String> l = new LinkedList<>(Arrays.asList(s));
+		l.add("id");
+		l.add(String.valueOf(GameService.playerId));
+		l.add("uuid");
+		l.add(HNSService.getUUID());
+		return params(l.toArray(new String[l.size()]));
 	}
 }

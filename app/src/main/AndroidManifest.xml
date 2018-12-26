@@ -14,7 +14,7 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
         <activity
-                android:name=".LoginActivity"
+                android:name=".activities.LoginActivity"
                 android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -23,13 +23,13 @@
             </intent-filter>
         </activity>
         <activity
-                android:name=".GameSetupActivity"
+                android:name=".activities.GameSetupActivity"
                 android:label="@string/title_activity_game_setup"
-                android:parentActivityName=".LoginActivity"
+                android:parentActivityName=".activities.LoginActivity"
                 android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
-                    android:value="de.geosearchef.hnsdroid.LoginActivity"/>
+                    android:value="de.geosearchef.hnsdroid.activities.LoginActivity"/>
         </activity>
     </application>
 
