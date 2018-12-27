@@ -1,6 +1,7 @@
 package de.geosearchef.hnsdroid.activities;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -57,6 +58,8 @@ public class JoinGameFragment extends Fragment {
 				new FXCallback(getActivity()) {
 					@Override
 					public void onSuccessFX(Object o) {
+						Intent intent = new Intent(getContext(), MapsActivity.class);
+						startActivity(intent);
 						progressDialog.hide();
 					}
 					@Override
