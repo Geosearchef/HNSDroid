@@ -100,6 +100,7 @@ public class WebService {
 					return;
 				}
 
+				GameService.playerType = playerType;
 				GameService.onJoinGame(response.getTitle(), response.getKey(), response.getGameConfig());
 				callback.onSuccess();
 			}
@@ -126,19 +127,22 @@ public class WebService {
 					return;
 				}
 
+				GameService.playerType = playerType;
 				GameService.onJoinGame(response.getTitle(), response.getKey(), response.getGameConfig());
 				callback.onSuccess();
 			}
 		});
 	}
 
-	public static void ownPosition(final Location location) throws HttpTemplate.HttpException {
+	public static void ownPosition(final Location location, final String phantomName) throws HttpTemplate.HttpException {
 		template.sendSyncRequest(
 				"/ownPosition",
 				Request.Method.POST,
 				location,
 				null,
-				template.paramsAuthorized()
+				template.paramsAuthorized(
+						"phantomName", phantomName
+				)
 		);
 	}
 

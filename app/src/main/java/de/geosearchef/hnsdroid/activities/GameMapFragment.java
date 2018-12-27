@@ -2,6 +2,7 @@ package de.geosearchef.hnsdroid.activities;
 
 
 import android.annotation.SuppressLint;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -15,10 +16,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.*;
 import de.geosearchef.hnsdroid.GameService;
 import de.geosearchef.hnsdroid.LocationService;
 import de.geosearchef.hnsdroid.R;
@@ -99,13 +97,20 @@ public class GameMapFragment extends Fragment implements OnMapReadyCallback {
                 map.clear();
                 synchronized (GameService.locations) {
                     for(TimedLocation location : GameService.locations) {
+                        LatLng latLng = new LatLng(location.getLocation().getLatitude(), location.getLocation().getLongitude());
                         Marker marker = map.addMarker(
                                 new MarkerOptions()
-                                        .position(new LatLng(location.getLocation().getLatitude(), location.getLocation().getLongitude()))
+                                        .position(latLng)
                                         .title(location.getName())
                                         .icon(BitmapDescriptorFactory.defaultMarker(location.isSpecialColor() ? BitmapDescriptorFactory.HUE_GREEN : BitmapDescriptorFactory.HUE_RED))
                         );
-//                        marker.showInfoWindow();  //Will only work for one
+//                        marker.showInfoWindow();  //Will only work for one marker
+
+                        map.addCircle(new CircleOptions()
+                                .center(latLng)
+                                .radius(location.getLocation().getRadius())
+                                .clickable(false)
+                                .strokeColor(location.isSpecialColor() ? Color.parseColor("#8800a000") : Color.parseColor("#88a00000")));
                     }
                 }
             }

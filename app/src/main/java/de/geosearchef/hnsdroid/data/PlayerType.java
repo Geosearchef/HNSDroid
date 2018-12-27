@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum PlayerType {
-	HIDER("h", "Hider"), SEEKER("s", "Seeker");
+	HIDER("h", "Hider"), SEEKER("s", "Seeker"), PHANTOM("p", "Phantom");
 
 	private final String key;
 	private final String displayName;

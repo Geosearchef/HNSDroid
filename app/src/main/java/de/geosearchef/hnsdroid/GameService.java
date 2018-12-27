@@ -1,8 +1,9 @@
 package de.geosearchef.hnsdroid;
 
-import android.widget.Toast;
 import de.geosearchef.hnsdroid.activities.GameMapFragment;
 import de.geosearchef.hnsdroid.data.GameConfig;
+import de.geosearchef.hnsdroid.data.Location;
+import de.geosearchef.hnsdroid.data.PlayerType;
 import de.geosearchef.hnsdroid.data.TimedLocation;
 import de.geosearchef.hnsdroid.responses.PositionsResponse;
 import de.geosearchef.hnsdroid.toolbox.Callback;
@@ -19,6 +20,7 @@ public class GameService {
 	public static int playerId;
 	public static String username;
 	public static String uuid;
+	public static PlayerType playerType;
 
 	public static GameConfig gameConfig;
 	public static String gameTitle;
@@ -32,6 +34,8 @@ public class GameService {
 	public static volatile List<TimedLocation> locations = new ArrayList<>();//SYNCHRONIZE
 	public static volatile GameMapFragment gameMapFragment;
 
+	public static volatile Location phantomLocation = new Location(0, 0, 5);
+	public static volatile String phantomName = "I am a phantom!";
 
 	private static volatile UpdateThread updateThread;
 
@@ -83,7 +87,11 @@ public class GameService {
 
                 Logger.info("Sending own position");
                 try {
-					WebService.ownPosition(LocationService.getMyLocation());
+                	if(playerType != PlayerType.PHANTOM) {
+						WebService.ownPosition(LocationService.getMyLocation(), phantomName);
+					} else {
+                		WebService.ownPosition(phantomLocation, phantomName);
+					}
 				} catch(HttpTemplate.HttpException e) {
 					//TODO: show a toast, this is not the UI thread
 					Logger.error(e);
@@ -101,8 +109,6 @@ public class GameService {
 						//TODO: show toast, this is not a UI thread
 					}
 				});
-
-                //get positions
 
 				try { Thread.sleep(gameConfig.getLocationUpdateInterval()); } catch(InterruptedException e) { Logger.error(e); }
 			}
