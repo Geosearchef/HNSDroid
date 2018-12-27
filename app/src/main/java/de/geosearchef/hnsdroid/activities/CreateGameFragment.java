@@ -60,11 +60,11 @@ public class CreateGameFragment extends Fragment {
 		WebService.createGame(
 				createGameTitleTextField.getText().toString(),
 				PlayerType.fromDisplayName((String) createPlayerTypeSpinner.getSelectedItem()),
-				new GameOptions(Integer.parseInt(createTotalTime.getText().toString()), Integer.parseInt(createRevealInterval.getText().toString())),
+				new GameOptions(Integer.parseInt(createTotalTime.getText().toString()) * 1000, Integer.parseInt(createRevealInterval.getText().toString()) * 1000),
 				new FXCallback(getActivity()) {
 					@Override
 					public void onSuccessFX(Object o) {
-						Intent intent = new Intent(getContext(), MapsActivity.class);
+						Intent intent = new Intent(getContext(), GameActivity.class);
 						startActivity(intent);
 						progressDialog.hide();
 					}

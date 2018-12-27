@@ -17,12 +17,15 @@ public class HNSService {
 	@Getter
 	private static Context applicationContext;
 
+	public static volatile boolean centerOnLocationUpdate = true;
+
 	public static void init(Context context) {
 		Logger.init("HNSDroid");
 		applicationContext = context;
 
 		sharedPreferences = context.getSharedPreferences(HNS_SHARED_PREFERENCES, Context.MODE_PRIVATE);
 
+		LocationService.init(context);
 		WebService.init();
 	}
 

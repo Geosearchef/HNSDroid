@@ -58,7 +58,7 @@ public class JoinGameFragment extends Fragment {
 				new FXCallback(getActivity()) {
 					@Override
 					public void onSuccessFX(Object o) {
-						Intent intent = new Intent(getContext(), MapsActivity.class);
+						Intent intent = new Intent(getContext(), GameActivity.class);
 						startActivity(intent);
 						progressDialog.hide();
 					}

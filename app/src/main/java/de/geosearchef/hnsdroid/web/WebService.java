@@ -4,8 +4,10 @@ import com.android.volley.Request;
 import de.geosearchef.hnsdroid.GameService;
 import de.geosearchef.hnsdroid.HNSService;
 import de.geosearchef.hnsdroid.data.GameOptions;
+import de.geosearchef.hnsdroid.data.Location;
 import de.geosearchef.hnsdroid.data.PlayerType;
 import de.geosearchef.hnsdroid.responses.JoinResponse;
+import de.geosearchef.hnsdroid.responses.PositionsResponse;
 import de.geosearchef.hnsdroid.responses.RegisterResponse;
 import de.geosearchef.hnsdroid.toolbox.Callback;
 import lombok.Getter;
@@ -125,6 +127,41 @@ public class WebService {
 				}
 
 				GameService.onJoinGame(response.getTitle(), response.getKey(), response.getGameConfig());
+				callback.onSuccess();
+			}
+		});
+	}
+
+	public static void ownPosition(final Location location) throws HttpTemplate.HttpException {
+		template.sendSyncRequest(
+				"/ownPosition",
+				Request.Method.POST,
+				location,
+				null,
+				template.paramsAuthorized()
+		);
+	}
+
+	public static void pollPositions(final Callback callback) {
+		runAsync(new Runnable() {
+			@Override
+			public void run() {
+				PositionsResponse response;
+				try {
+					response = template.<PositionsResponse>sendSyncRequest(
+							"/positions",
+							Request.Method.GET,
+							null,
+							PositionsResponse.class,
+							template.paramsAuthorized()
+					);
+				} catch(HttpTemplate.HttpException e) {
+					callback.onFailure(e);
+					return;
+				}
+
+				GameService.onPositionsReceived(response);
+
 				callback.onSuccess();
 			}
 		});

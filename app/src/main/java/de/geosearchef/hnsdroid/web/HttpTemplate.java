@@ -49,7 +49,11 @@ public class HttpTemplate {
 				new Response.Listener<JSONObject>() {
 					@Override
 					public void onResponse(JSONObject response) {
-						callback.onSuccess((T) gson.fromJson(response.toString(), reponseClass));
+						if(reponseClass != null) {
+							callback.onSuccess((T) gson.fromJson(response.toString(), reponseClass));
+						} else {
+							callback.onSuccess((T) new Object());
+						}
 					}
 				},
 				new Response.ErrorListener() {
@@ -60,7 +64,7 @@ public class HttpTemplate {
 					}
 				}) {
 			@Override
-			public Map<String, String> getHeaders() throws AuthFailureError {
+			public Map<String, String> getHeaders() {
 				HashMap<String, String> headers = new HashMap<String, String>();
 				headers.put("Content-Type", "application/json; charset=utf-8");
 				return headers;
@@ -84,7 +88,7 @@ public class HttpTemplate {
 			@Override
 			public void onFailure(Exception e) {
 				synchronized (result) {
-					result[1] = e.toString();
+					result[1] = e;
 					result.notifyAll();
 				}
 			}
@@ -103,7 +107,7 @@ public class HttpTemplate {
 		if(result[0] != null) {
 			return (T) result[0];
 		} else {
-			throw new HttpException((String) result[1]);
+			throw new HttpException(result[1].toString());
 		}
 	}
 
