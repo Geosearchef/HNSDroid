@@ -76,6 +76,10 @@ public class GameService {
 		}
 	}
 
+	public static boolean isPhantom() {
+		return playerType == PlayerType.PHANTOM;
+	}
+
 	private static class UpdateThread extends Thread {
 		@Override
 		public void run() {

@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import de.geosearchef.hnsdroid.HNSService;
+import de.geosearchef.hnsdroid.LocationService;
 import de.geosearchef.hnsdroid.R;
 import de.geosearchef.hnsdroid.toolbox.FXCallback;
 import de.geosearchef.hnsdroid.toolbox.Toolbox;
@@ -96,6 +97,10 @@ public class LoginActivity extends AppCompatActivity {
 			}
 		}
 
+		if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)  == PackageManager.PERMISSION_GRANTED) {
+			LocationService.init(this);
+		}
+
 		ActivityCompat.requestPermissions(this, permissionsToBeRequested.toArray(new String[permissionsToBeRequested.size()]), PERMISSIONS_REQUEST);
 	}
 
@@ -110,5 +115,7 @@ public class LoginActivity extends AppCompatActivity {
 				}
 			}
 		}
+
+		LocationService.init(this);
 	}
 }

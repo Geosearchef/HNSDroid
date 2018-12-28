@@ -52,8 +52,11 @@ public class GameMapFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap map) {
         this.map = map;
 
-        map.setMyLocationEnabled(true);
-        map.getUiSettings().setMyLocationButtonEnabled(true);
+        if(! GameService.isPhantom()) {
+            map.setMyLocationEnabled(true);
+            map.getUiSettings().setMyLocationButtonEnabled(true);
+        }
+
         map.getUiSettings().setZoomControlsEnabled(true);
         map.getUiSettings().setMapToolbarEnabled(false);
 
@@ -68,6 +71,8 @@ public class GameMapFragment extends Fragment implements OnMapReadyCallback {
         if(GameService.gameEndTime != 0) {
             loadLocations();
         }
+
+        map.setOnMapLongClickListener(mapClickListener);
     }
 
     public void moveCamera(Location loc) {
@@ -112,6 +117,16 @@ public class GameMapFragment extends Fragment implements OnMapReadyCallback {
                                 .clickable(false)
                                 .strokeColor(location.isSpecialColor() ? Color.parseColor("#8800a000") : Color.parseColor("#88a00000")));
                     }
+
+                    if(GameService.isPhantom()) {
+                        map.addCircle(new CircleOptions()
+                                .center(new LatLng(GameService.phantomLocation.getLatitude(), GameService.phantomLocation.getLongitude()))
+                                .radius(GameService.phantomLocation.getRadius())
+                                .strokeColor(Color.parseColor("#880000a0"))
+                                .fillColor(Color.parseColor("#440000a0"))
+                        );
+                    }
+
                 }
             }
         });
@@ -139,4 +154,13 @@ public class GameMapFragment extends Fragment implements OnMapReadyCallback {
             timer = null;
         }
     }
+
+
+    private GoogleMap.OnMapLongClickListener mapClickListener = new GoogleMap.OnMapLongClickListener() {
+        @Override
+        public void onMapLongClick(LatLng latLng) {
+            GameService.phantomLocation = new de.geosearchef.hnsdroid.data.Location(latLng.latitude, latLng.longitude, Math.random() * 5.0 + 5.0);
+            loadLocations();
+        }
+    };
 }

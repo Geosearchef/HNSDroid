@@ -14,8 +14,15 @@ public class LocationService {
     private static LocationManager locationManager;
     private static volatile android.location.Location lastLocation;
 
+    private static boolean initStarted = false;
+
     @SuppressLint("MissingPermission")
     public static void init(Context context) {
+        if(initStarted) {
+            return;
+        }
+        initStarted = true;
+
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 
         ensureGPSEnabled(context);

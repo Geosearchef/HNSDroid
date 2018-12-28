@@ -25,7 +25,6 @@ public class HNSService {
 
 		sharedPreferences = context.getSharedPreferences(HNS_SHARED_PREFERENCES, Context.MODE_PRIVATE);
 
-		LocationService.init(context);
 		WebService.init();
 	}
 
