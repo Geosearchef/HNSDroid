@@ -1,10 +1,16 @@
 package de.geosearchef.hnsdroid.activities;
 
 import android.Manifest;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +24,7 @@ import de.geosearchef.hnsdroid.R;
 import de.geosearchef.hnsdroid.toolbox.FXCallback;
 import de.geosearchef.hnsdroid.toolbox.Toolbox;
 import de.geosearchef.hnsdroid.web.WebService;
+import lombok.var;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -57,6 +64,8 @@ public class LoginActivity extends AppCompatActivity {
 
 		progressDialog = Toolbox.generateProgressDialog(this, "Connecting...");
 
+		createNotification();
+
 		WebService.init();
 
 		requestPermissions();
@@ -88,8 +97,37 @@ public class LoginActivity extends AppCompatActivity {
 
 	}
 
+	private void createNotification() {
+		var notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		Notification notification = new Notification.Builder(this)
+				.setContentTitle("HNSDroid is running")
+				.setContentText("I want to stay alive.")
+				.setSmallIcon(R.drawable.logo)
+				.setOngoing(true)
+				.build();
+
+		if (notificationManager != null) {
+			notificationManager.notify(8765, notification);
+		}
+	}
+
+	private void requestAppStandbyExcemption() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			String packageName = this.getPackageName();
+			PowerManager pm = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
+			if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+				Intent intent = new Intent();
+				intent.setAction(android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				intent.setData(Uri.parse("package:" + packageName));
+				this.startActivity(intent);
+
+			}
+		}
+	}
+
 	private static final int PERMISSIONS_REQUEST = 8795;
-	public void requestPermissions() {
+	private void requestPermissions() {
 		List<String> permissionsToBeRequested = new LinkedList<>();
 		for(String permission : requiredPermissions) {
 			if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
@@ -101,7 +139,11 @@ public class LoginActivity extends AppCompatActivity {
 			LocationService.init(this);
 		}
 
-		ActivityCompat.requestPermissions(this, permissionsToBeRequested.toArray(new String[permissionsToBeRequested.size()]), PERMISSIONS_REQUEST);
+		if(! permissionsToBeRequested.isEmpty()) {
+			ActivityCompat.requestPermissions(this, permissionsToBeRequested.toArray(new String[permissionsToBeRequested.size()]), PERMISSIONS_REQUEST);
+		} else {
+			requestAppStandbyExcemption();
+		}
 	}
 
 	@Override
@@ -117,5 +159,6 @@ public class LoginActivity extends AppCompatActivity {
 		}
 
 		LocationService.init(this);
+		requestAppStandbyExcemption();
 	}
 }
